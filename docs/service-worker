@@ -5,7 +5,7 @@ self.addEventListener('install', (event) => {
       return cache.addAll([
         './index.html',
         './manifest.json',
-        './icon.png',
+        './RoundMITE3.png',
         // List other assets here, such as CSS, JS files, images, etc.
       ]);
     })

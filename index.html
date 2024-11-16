@@ -111,40 +111,53 @@
 
   <script type="text/javascript" src="https://phoebe.streamerr.co:1450/media/static/js/sc_player/sc_player.js"></script>
   <script>
-    function toggleCalendar(calendarId, headingId) {
-      // Find the calendar and heading elements
-      var selectedCalendar = document.getElementById(calendarId);
-      var selectedHeading = document.getElementById(headingId);
-   
-      // Check if the selected calendar is already visible
-      if (selectedCalendar.style.display === "block") {
-        // If the calendar is already visible, hide it and reset heading color
-        selectedCalendar.style.display = "none";
-        selectedHeading.classList.remove('selected');
-  
-        // Smoothly scroll the heading down when the calendar is closed
-        selectedHeading.scrollIntoView({ behavior: "smooth", block: "start" });
-        } else {
-        // If the calendar is not visible, hide all calendars
-        var calendars = document.querySelectorAll('.calendar');
-        calendars.forEach(function(calendar) {
-          calendar.style.display = "none";
-        });
+let lastScrollPos = 0;  // Track the last scroll position before opening the calendar
 
-        // Hide the "selected" class from all headings
-        var headings = document.querySelectorAll('h3');
-        headings.forEach(function(heading) {
-          heading.classList.remove('selected');
-        });
+function toggleCalendar(calendarId, headingId) {
+  // Find the calendar and heading elements
+  var selectedCalendar = document.getElementById(calendarId);
+  var selectedHeading = document.getElementById(headingId);
 
-        // Display the selected calendar and highlight the heading
-        selectedCalendar.style.display = "block";
-        selectedHeading.classList.add('selected');
+  // If the calendar is currently visible
+  if (selectedCalendar.style.display === "block") {
+    // Save the current scroll position before closing the calendar
+    lastScrollPos = window.scrollY;
 
-        // Scroll the heading into view smoothly
-        selectedHeading.scrollIntoView({ behavior: 'smooth', block: 'start' });     
-      }
+    // Hide the selected calendar
+    selectedCalendar.style.display = "none";
+
+    // Check if the page is at the bottom
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+      // If we're at the bottom, scroll up slightly before closing
+      window.scrollBy({ top: -50, behavior: 'smooth' });
+    } else {
+      // Scroll the page back to the saved position smoothly
+      window.scrollTo({ top: lastScrollPos, behavior: "smooth" });
     }
+
+    // Remove the "selected" class from the heading
+    selectedHeading.classList.remove('selected');
+  } else {
+    // Hide all other calendars and reset their headings
+    var calendars = document.querySelectorAll('.calendar');
+    calendars.forEach(function(calendar) {
+      calendar.style.display = "none";
+    });
+
+    var headings = document.querySelectorAll('h3');
+    headings.forEach(function(heading) {
+      heading.classList.remove('selected');
+    });
+
+    // Show the selected calendar and highlight the heading
+    selectedCalendar.style.display = "block";
+    selectedHeading.classList.add('selected');
+
+    // Smoothly scroll the heading into view
+    selectedHeading.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
   </script>
   <!-- Register the service worker -->
   <script>

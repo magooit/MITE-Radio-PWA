@@ -121,7 +121,10 @@
         // If the calendar is already visible, hide it and reset heading color
         selectedCalendar.style.display = "none";
         selectedHeading.classList.remove('selected');
-      } else {
+  
+        // Smoothly scroll the heading down when the calendar is closed
+        selectedHeading.scrollIntoView({ behavior: "smooth", block: "start" });
+        } else {
         // If the calendar is not visible, hide all calendars
         var calendars = document.querySelectorAll('.calendar');
         calendars.forEach(function(calendar) {

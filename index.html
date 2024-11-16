@@ -33,6 +33,16 @@
       width: 100%;
       height: 600px;
     }
+    .header-container {
+      display: flex;
+      justify-content: space-around;
+    }
+    .header-container h3 {
+      flex: 1;
+      text-align: center;
+      cursor: pointer;
+      margin: 0;
+    }
   </style>
 </head>
 <body>
@@ -94,26 +104,31 @@
     >
     </div>
   </div>
+
   <h3><a href="https://www.miteradio.com.au/blog.html" target="_blank">Check out the MITE Radio Blog</a></h3>
   <h3><a href="https://docs.google.com/forms/d/e/1FAIpQLScgiAMMGkA1gbSBJvZlRMJE42PjkVzftgzzq2-6uhUFaqH3UA/viewform" target="_blank">Do you have a question?</a></h3>
 
-  <!-- Headings to toggle calendars -->
-  <h3 id="headingWST" onclick="toggleCalendar('calendarWST', 'headingWST')">MITE Station Schedule (Perth Time WST)</h3>
-  <h3 id="headingACST" onclick="toggleCalendar('calendarACST', 'headingACST')">MITE Station Schedule (Australia Central Time ACST)</h3>
-  <h3 id="headingAEST" onclick="toggleCalendar('calendarAEST', 'headingAEST')">MITE Station Schedule (Australia Eastern Time AEST)</h3>
-  
+  <!-- Calendar header container -->
+  <div class="header-container">
+    <h3 id="headingWST" onclick="toggleCalendar(event, 'calendarWST', 'headingWST')">Schedule Perth Time WST</h3>
+    <h3 id="headingACST" onclick="toggleCalendar(event, 'calendarACST', 'headingACST')">Australia Central Time ACST</h3>
+    <h3 id="headingAEST" onclick="toggleCalendar(event, 'calendarAEST', 'headingAEST')">Australia Eastern Time AEST</h3>
+  </div>
+
   <!-- Calendar iframes, each with a unique ID and timezone -->
   <iframe id="calendarWST" class="calendar" src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Australia%2FPerth&bgcolor=%234285F4&showTitle=0&showPrint=0&mode=AGENDA&showCalendars=0&showTabs=0&src=a2F5QHN0YWlyd2F5cHJvamVjdC5vcmc&color=%234285F4" frameborder="0" scrolling="no"></iframe>
-
   <iframe id="calendarACST" class="calendar" src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Australia%2FAdelaide&bgcolor=%234285F4&showTitle=0&showPrint=0&mode=AGENDA&showCalendars=0&showTabs=0&src=a2F5QHN0YWlyd2F5cHJvamVjdC5vcmc&color=%234285F4" frameborder="0" scrolling="no"></iframe>
-
   <iframe id="calendarAEST" class="calendar" src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Australia%2FSydney&bgcolor=%234285F4&showTitle=0&showPrint=0&mode=AGENDA&showCalendars=0&showTabs=0&src=a2F5QHN0YWlyd2F5cHJvamVjdC5vcmc&color=%234285F4" frameborder="0" scrolling="no"></iframe>
 
   <script type="text/javascript" src="https://phoebe.streamerr.co:1450/media/static/js/sc_player/sc_player.js"></script>
+
   <script>
 let lastScrollPos = 0;  // Track the last scroll position before opening the calendar
 
-function toggleCalendar(calendarId, headingId) {
+function toggleCalendar(event, calendarId, headingId) {
+  // Prevent the default behavior of the anchor tag (i.e., going to the top)
+  event.preventDefault();
+
   // Find the calendar and heading elements
   var selectedCalendar = document.getElementById(calendarId);
   var selectedHeading = document.getElementById(headingId);
@@ -126,14 +141,8 @@ function toggleCalendar(calendarId, headingId) {
     // Hide the selected calendar
     selectedCalendar.style.display = "none";
 
-    // Check if the page is at the bottom
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-      // If we're at the bottom, scroll up slightly before closing
-      window.scrollBy({ top: -50, behavior: 'smooth' });
-    } else {
-      // Scroll the page back to the saved position smoothly
-      window.scrollTo({ top: lastScrollPos, behavior: "smooth" });
-    }
+    // Smoothly scroll back to the saved position
+    window.scrollTo({ top: lastScrollPos, behavior: "smooth" });
 
     // Remove the "selected" class from the heading
     selectedHeading.classList.remove('selected');
@@ -153,12 +162,15 @@ function toggleCalendar(calendarId, headingId) {
     selectedCalendar.style.display = "block";
     selectedHeading.classList.add('selected');
 
-    // Smoothly scroll the heading into view
-    selectedHeading.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Ensure the calendar is rendered first before scrolling
+    setTimeout(function() {
+      // Smoothly scroll the selected calendar into view
+      selectedCalendar.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 0); // Timeout to allow for calendar rendering
   }
 }
-
   </script>
+
   <!-- Register the service worker -->
   <script>
     if ('serviceWorker' in navigator) {

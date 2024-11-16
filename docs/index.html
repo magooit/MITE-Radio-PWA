@@ -1,1 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MITE Radio PWA</title>
+  <link rel="manifest" href="./manifest.json">
+  <style>
+    h3 {
+      text-align: center;
+      margin-bottom: 10px;
+      background-color: #78a3b5;
+      color: white;
+      padding: 10px;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      border: 1px solid white;
+      cursor: pointer;
+    }
+    .selected {
+      background-color: #4165b9; /* Color for the selected heading */
+    }
+    #sc-player {
+      width: 100%;
+    }
+    a {
+      color: white;
+      text-decoration: none;
+    }
+    .calendar {
+      display: none; /* Hide all calendars by default */
+      border: 1px solid #777;
+      width: 100%;
+      height: 600px;
+    }
+    .header-container {
+      display: flex;
+      justify-content: space-around;
+    }
+    .header-container h3 {
+      flex: 1;
+      text-align: center;
+      cursor: pointer;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="sc-player">
+    <div
+      is="player"
+      lang="en"
+      api-url="https://phoebe.streamerr.co:1450/api/v2"
+      server-id="1"
+      station-name="MITE Radio"
+      station-url="https://miteradio.com.au"
+      imagecontainer="top"
+      imagecontainer-bg="#78a3b5"
+      imagecontainer-bg-opacity="1"
+      controlscontainer="bottom"
+      controlscontainer-bg="#d6d6d6"
+      controlscontainer-bg-opacity="1"
+      controlscontainer-bg-img="./MITEbackground8.png"
+      historycontainer="bottom"
+      historycontainer-bg="#cdd8e5"
+      historycontainer-bg-opacity="1"
+      :show-history="true"
+      history-limit="10"
+      sharecontainer="both"
+      sharecontainer-bg="#ffffff"
+      sharecontainer-bg-opacity="1"
+      :show-share="false"
+      share-url=""
+      :share="['facebook']"
+      :show-dj="false"
+      default-dj-img="https://phoebe.streamerr.co:1450/media/djs/dj.png"
+      :show-image="true"
+      default-cover-image="https://phoebe.streamerr.co:1450/media/tracks/default_track_img.png"
+      play-button-color="#35495e"
+      play-button-bg="null"
+      visualizer-outline-color="#37679a"
+      visualizer-bar-width="1"
+      :channels-displayed="[1]"
+      channels-switch-bg="#4165b9"
+      channels-switch-color="#ffffff"
+      channels-switch-bg-active="#dddddd"
+      channels-switch-color-active="#000000"
+      :show-vote="false"
+      vote-buttons-color="#35495e"
+      vote-buttons-opacity="1"
+      vote-results-font-color="#FFFFFF"
+      vote-results-font-size="16"
+      :progress-show="true"
+      progress-bar-color="#35495e"
+      progress-bar-bg-color="#41b883"
+      progress-bar-bg-opacity="0.1"
+      progress-bar-bg-height="25"
+      progress-bar-opacity="1"
+      progress-font-color="#FFFFFF"
+      progress-font-size="12"
+      progress-bar-bg-radius="10"
+      progress-bar-bg-border="#F5F5F5"
+      player-width="100%"
+    >
+    </div>
+  </div>
 
+  <h3><a href="https://www.miteradio.com.au/blog.html" target="_blank">Check out the MITE Radio Blog</a></h3>
+  <h3><a href="https://docs.google.com/forms/d/e/1FAIpQLScgiAMMGkA1gbSBJvZlRMJE42PjkVzftgzzq2-6uhUFaqH3UA/viewform" target="_blank">Do you have a question?</a></h3>
+
+  <!-- Calendar header container -->
+  <div class="header-container">
+    <h3 id="headingWST" onclick="toggleCalendar(event, 'calendarWST', 'headingWST')">Schedule Perth Time WST</h3>
+    <h3 id="headingACST" onclick="toggleCalendar(event, 'calendarACST', 'headingACST')">Australia Central Time ACST</h3>
+    <h3 id="headingAEST" onclick="toggleCalendar(event, 'calendarAEST', 'headingAEST')">Australia Eastern Time AEST</h3>
+  </div>
+
+  <!-- Calendar iframes, each with a unique ID and timezone -->
+  <iframe id="calendarWST" class="calendar" src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Australia%2FPerth&bgcolor=%234285F4&showTitle=0&showPrint=0&mode=AGENDA&showCalendars=0&showTabs=0&src=a2F5QHN0YWlyd2F5cHJvamVjdC5vcmc&color=%234285F4" frameborder="0" scrolling="no"></iframe>
+  <iframe id="calendarACST" class="calendar" src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Australia%2FAdelaide&bgcolor=%234285F4&showTitle=0&showPrint=0&mode=AGENDA&showCalendars=0&showTabs=0&src=a2F5QHN0YWlyd2F5cHJvamVjdC5vcmc&color=%234285F4" frameborder="0" scrolling="no"></iframe>
+  <iframe id="calendarAEST" class="calendar" src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Australia%2FSydney&bgcolor=%234285F4&showTitle=0&showPrint=0&mode=AGENDA&showCalendars=0&showTabs=0&src=a2F5QHN0YWlyd2F5cHJvamVjdC5vcmc&color=%234285F4" frameborder="0" scrolling="no"></iframe>
+
+  <script type="text/javascript" src="https://phoebe.streamerr.co:1450/media/static/js/sc_player/sc_player.js"></script>
+
+  <script>
+let lastScrollPos = 0;  // Track the last scroll position before opening the calendar
+
+function toggleCalendar(event, calendarId, headingId) {
+  // Prevent the default behavior of the anchor tag (i.e., going to the top)
+  event.preventDefault();
+
+  // Find the calendar and heading elements
+  var selectedCalendar = document.getElementById(calendarId);
+  var selectedHeading = document.getElementById(headingId);
+
+  // If the calendar is currently visible
+  if (selectedCalendar.style.display === "block") {
+    // Save the current scroll position before closing the calendar
+    lastScrollPos = window.scrollY;
+
+    // Hide the selected calendar
+    selectedCalendar.style.display = "none";
+
+    // Smoothly scroll back to the saved position
+    window.scrollTo({ top: lastScrollPos, behavior: "smooth" });
+
+    // Remove the "selected" class from the heading
+    selectedHeading.classList.remove('selected');
+  } else {
+    // Hide all other calendars and reset their headings
+    var calendars = document.querySelectorAll('.calendar');
+    calendars.forEach(function(calendar) {
+      calendar.style.display = "none";
+    });
+
+    var headings = document.querySelectorAll('h3');
+    headings.forEach(function(heading) {
+      heading.classList.remove('selected');
+    });
+
+    // Show the selected calendar and highlight the heading
+    selectedCalendar.style.display = "block";
+    selectedHeading.classList.add('selected');
+
+    // Ensure the calendar is rendered first before scrolling
+    setTimeout(function() {
+      // Smoothly scroll the selected calendar into view
+      selectedCalendar.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 0); // Timeout to allow for calendar rendering
+  }
+}
+  </script>
+
+  <!-- Register the service worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+          .then((registration) => console.log('Service Worker registered:', registration))
+          .catch((error) => console.log('Service Worker registration failed:', error));
+      });
+    }
+  </script>
+
+</body>
+</html>

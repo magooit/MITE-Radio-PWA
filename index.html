@@ -115,7 +115,10 @@
       // Find the calendar and heading elements
       var selectedCalendar = document.getElementById(calendarId);
       var selectedHeading = document.getElementById(headingId);
-
+   
+      // Scroll the heading into view smoothly
+        selectedHeading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      
       // Check if the selected calendar is already visible
       if (selectedCalendar.style.display === "block") {
         // If the calendar is already visible, hide it and reset heading color

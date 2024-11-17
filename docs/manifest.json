@@ -4,6 +4,7 @@
   "start_url": "/MITE-Radio-PWA/",
   "scope": "/MITE-Radio-PWA/",
   "display": "standalone",
+  "orientation": "portrait-primary",  
   "background_color": "#ffffff",
   "theme_color": "#78a3b5",
   "icons": [

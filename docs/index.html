@@ -2,27 +2,10 @@
 <html>
 <head>
   <meta charset="UTF-8">
-
-  <meta name="theme-color" content="#4165b9">
-
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="MITE Radio">
-  <link rel="apple-touch-icon" href="icon.png">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MITE Radio PWA</title>
   <link rel="manifest" href="./manifest.json">
-  
-  <!-- Force portrait orientation on mobile -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no>
-
   <style>
-    body {
-     width: 400px;
-     max-width: 400px;
-     margin: 0 auto; /* To center it */
-    }
-	  
     h3 {
       text-align: center;
       margin-bottom: 10px;
@@ -66,7 +49,7 @@
     background-color: white;
     color: black;
     padding: 10px;
-    font-size: 14px;
+    font-size: 10px;
     margin-top: 20px; /* Add some space above the footer */
 }
 
@@ -208,59 +191,9 @@ function toggleCalendar(event, calendarId, headingId) {
       });
     }
   </script>
-  
-  <script>
-  if (window.matchMedia('(display-mode: standalone)').matches) {
-    console.log('App is running in standalone mode.');
-  } else {
-    console.log('App is running in browser mode.');
-    // Optional: Redirect users to install instructions or specific behavior.
-  }
-  </script>
-  
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-
-    // Function to determine if the device is mobile
-    const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-
-    if (isStandalone) {
-      // For standalone PWA: Adjust width to 400px for both mobile and PC when installed
-      document.body.style.width = '400px';
-      document.body.style.maxWidth = '400px';
-      document.body.style.margin = '0 auto'; // Center the content
-
-    } else if (isMobile) {
-      // For mobile devices: Ensure full width
-      document.body.style.width = '100%'; // Full width for mobile
-    } else {
-      // For PC (non-standalone): Open resized window with 400px width
-      const width = 400;
-      const height = window.screen.availHeight; // Max height
-      const left = (window.screen.width - width) / 2; // Center horizontally
-
-      if (window.innerWidth !== width || window.innerHeight !== height) {
-        const newWindow = window.open(
-          window.location.href,
-          "_blank",
-          `width=${width},height=${height},left=${left},top=0,scrollbars=yes,resizable=yes`
-        );
-
-        // Close the original window if the new one opens
-        if (newWindow) {
-          window.close();
-        } else {
-          console.warn("Failed to open a new window. Check pop-up settings.");
-        }
-      }
-    }
-  });
-</script>
-
   <!-- Footer -->
   <div class="footer">
-    v1.02 By using this app you agree to the terms and conditions on the MITE Radio website
+    v1.01 Usage terms and conditions on the MITE Radio website
   </div>
 </body>
 </html>

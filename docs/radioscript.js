@@ -49,7 +49,6 @@ audioPlayer.addEventListener('loadstart', () => {
 
 audioPlayer.addEventListener('canplay', () => {
     loadingIndicator.style.display = 'none';
-    playStream(); // Start playing automatically once ready
 });
 
 audioPlayer.addEventListener('error', (error) => {

@@ -61,11 +61,13 @@
 
 <script type="text/javascript" language="javascript" src="https://carina.streamerr.co:2020/dist/widgets.js" defer></script>
 <body>
-
+  <div id="live-status" style="padding: 10px; font-weight: bold;">
+        <h3>Loading stream status...</h3>
+  </div>
   <div id="MediaCP-player">
     <iframe width="100%" height="330" src="https://carina.streamerr.co/AudioPlayer/miteradio?mount=&" border="0" style="border: 0;"></iframe>
   </div>
-
+  <h3>Recently Played</h3>
   <div data-widget="mcp-recently-played" data-name="miteradio" data-limit="5" data-covers="true"></div>
 
   <h3><a href="https://www.miteradio.com.au/blog.html" target="_blank">Check out the MITE Radio Blog</a></h3>
@@ -101,6 +103,42 @@
         setTimeout(() => selectedCalendar.scrollIntoView({ behavior: "smooth", block: "start" }), 0);
       }
     }
+  </script>
+  
+  <script>
+        function checkLiveStatus() {
+            fetch('https://carina.streamerr.co:2020/json/stream/miteradio')
+                .then(response => response.json())
+                .then(data => {
+                    const statusElement = document.getElementById('live-status');
+                    
+                    // Using startsWith is safer as we discussed
+                    if (data.nowplaying && data.nowplaying.startsWith("DJ ")) {
+                        statusElement.innerText = "LIVE: " + data.nowplaying;
+                        statusElement.style.backgroundColor = "darkred";
+                        statusElement.style.color = "white"
+                        statusElement.style.fontFamily = "Arial, sans-serif";
+                        statusElement.style.fontSize = "16px";
+                    } else {
+                        statusElement.innerText = "Now Playing"// + data.nowplaying;
+                        statusElement.style.backgroundColor = "#78a3b5";
+                        statusElement.style.color = "white";
+                        statusElement.style.fontFamily = "Arial, sans-serif";
+                        statusElement.style.fontSize = "16px";
+                        statusElement.style.textAlign = "center";
+                    }
+                })
+                .catch(err => {
+                    console.error("Could not fetch status:", err);
+                    document.getElementById('live-status').innerText = "Stream status unavailable";
+                });
+        }
+
+        // Run once immediately when the page loads
+        checkLiveStatus();
+
+        // Check again every 30 seconds (30000 milliseconds)
+        setInterval(checkLiveStatus, 30000);
   </script>
 
   <script>

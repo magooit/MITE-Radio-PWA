@@ -67,6 +67,14 @@
   <div id="MediaCP-player">
     <iframe width="100%" height="330" src="https://carina.streamerr.co/AudioPlayer/miteradio?mount=&" border="0" style="border: 0;"></iframe>
   </div>
+
+  <div id="Website-player">
+    <audio id="native-audio" controls preload="none" style="width: 100%;">
+    <source src="https://carina.streamerr.co/stream/miteradio?ua=Website-Player" type="audio/mpeg">
+    Your browser does not support the audio element.
+    </audio>
+  </div>
+  
   <h3>Recently Played</h3>
   <div data-widget="mcp-recently-played" data-name="miteradio" data-limit="5" data-covers="true"></div>
 
@@ -104,6 +112,26 @@
       }
     }
   </script>
+
+  <script>
+    // Media Session API integration to keep native player active in background
+    const nativeAudio = document.getElementById('native-audio');
+
+    if ('mediaSession' in navigator && nativeAudio) {
+      nativeAudio.addEventListener('play', () => {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: 'MITE Radio Live Stream',
+          artist: 'MITE Radio',
+          album: 'Live Internet Broadcast'
+        });
+        navigator.mediaSession.playbackState = 'playing';
+      });
+
+      nativeAudio.addEventListener('pause', () => {
+        navigator.mediaSession.playbackState = 'paused';
+      });
+    }
+  </script>  
   
   <script>
         function checkLiveStatus() {

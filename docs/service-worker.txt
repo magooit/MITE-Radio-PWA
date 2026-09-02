@@ -23,13 +23,13 @@ self.addEventListener('install', (event) => {
 
 // Fetch event: Handle requests for assets and audio files
 self.addEventListener('fetch', (event) => {
-  // Handle requests for audio files (streaming)
-  if (event.request.url.endsWith('.mp3') || event.request.url.endsWith('.ogg')) {
-    event.respondWith(handleAudioFetch(event));
-  } else {
-    // For other assets, use cache or fetch from network
-    event.respondWith(handleCacheOrFetch(event));
+  // CRITICAL: Bypass service worker entirely for live streaming URLs
+  if (event.request.url.includes('streamerr.co')) {
+    return; 
   }
+
+  // Handle requests for static assets
+  event.respondWith(handleCacheOrFetch(event));
 });
 
 // Function to handle audio file fetch (cache audio files)

@@ -113,16 +113,19 @@
   </script>
 
   <script>
-    // Media Session API integration with action handlers for background persistence
+    // Media Session API integration
     const nativeAudio = document.getElementById('native-audio');
 
     if ('mediaSession' in navigator && nativeAudio) {
+      
+      // Set metadata immediately so the OS knows what this player is
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: 'MITE Radio Live Stream',
+        artist: 'MITE Radio',
+        album: 'Live Internet Broadcast'
+      });
+
       nativeAudio.addEventListener('play', () => {
-        navigator.mediaSession.metadata = new MediaMetadata({
-          title: 'MITE Radio Live Stream',
-          artist: 'MITE Radio',
-          album: 'Live Internet Broadcast'
-        });
         navigator.mediaSession.playbackState = 'playing';
       });
 
@@ -130,7 +133,7 @@
         navigator.mediaSession.playbackState = 'paused';
       });
 
-      // Required by mobile OSs to maintain active media session control
+      // Action handlers for lock screen controls
       navigator.mediaSession.setActionHandler('play', async () => {
         try {
           await nativeAudio.play();
@@ -145,7 +148,7 @@
         navigator.mediaSession.playbackState = 'paused';
       });
     }
-  </script>  
+  </script>
   
   <script>
         function checkLiveStatus() {

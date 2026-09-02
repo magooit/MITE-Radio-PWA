@@ -113,7 +113,7 @@
   </script>
 
   <script>
-    // Media Session API integration to keep native player active in background
+    // Media Session API integration with action handlers for background persistence
     const nativeAudio = document.getElementById('native-audio');
 
     if ('mediaSession' in navigator && nativeAudio) {
@@ -127,6 +127,21 @@
       });
 
       nativeAudio.addEventListener('pause', () => {
+        navigator.mediaSession.playbackState = 'paused';
+      });
+
+      // Required by mobile OSs to maintain active media session control
+      navigator.mediaSession.setActionHandler('play', async () => {
+        try {
+          await nativeAudio.play();
+          navigator.mediaSession.playbackState = 'playing';
+        } catch (err) {
+          console.error("Playback failed:", err);
+        }
+      });
+
+      navigator.mediaSession.setActionHandler('pause', () => {
+        nativeAudio.pause();
         navigator.mediaSession.playbackState = 'paused';
       });
     }

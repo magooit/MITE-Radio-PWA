@@ -7,6 +7,18 @@
   <link rel="manifest" href="./manifest.json">
   
   <style>
+    body {
+      background-color: #ffffff;
+      color: #000000;
+      transition: background-color 0.3s, color 0.3s;
+      margin: 0;
+      padding: 10px;
+      font-family: Arial, sans-serif;
+      box-sizing: border-box;
+    }
+    *, *:before, *:after {
+      box-sizing: inherit;
+    }
     h3 {
       text-align: center;
       margin-bottom: 10px;
@@ -18,9 +30,10 @@
       font-size: 16px;
       border: 1px solid white;
       cursor: pointer;
+      transition: background-color 0.3s;
     }
     .selected {
-      background-color: #4165b9;
+      background-color: #4165b9 !important;
     }
     #sc-player { width: 100%; }
     a { color: white; text-decoration: none; }
@@ -45,7 +58,7 @@
     [data-widget="mcp-recently-played"] ul li,
     [data-widget="mcp-recently-played"] ul li * {
         font-family: 'Arial', sans-serif !important;
-        font-size: 15px !important; /* Adjust 14px to your desired size */
+        font-size: 15px !important;
     }
 
     [data-widget="mcp-recently-played"] ul li:nth-child(odd) {
@@ -56,21 +69,70 @@
         background-color: #ffffff !important;
     }
 
+    /* Dark Mode Styles */
+    body.dark-mode {
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+    body.dark-mode audio {
+      color-scheme: dark;
+    }
+    body.dark-mode h3 {
+      background-color: #2c4a56;
+      border-color: #333333;
+    }
+    body.dark-mode h3.selected {
+      background-color: #2b4478 !important;
+    }
+    body.dark-mode #sleep-timer {
+      background-color: #1e1e1e !important;
+      color: #e0e0e0 !important;
+      border-color: #444444 !important;
+    }
+    body.dark-mode .calendar {
+      filter: invert(90%) hue-rotate(180deg);
+      background-color: #121212;
+    }
+    body.dark-mode .footer {
+      background-color: #1e1e1e;
+      color: #a0a0a0;
+    }
+    body.dark-mode [data-widget="mcp-recently-played"] ul li:nth-child(odd) {
+        background-color: #1e1e1e !important;
+    }
+    body.dark-mode [data-widget="mcp-recently-played"] ul li:nth-child(even) {
+        background-color: #2a2a2a !important;
+    }
+    body.dark-mode [data-widget="mcp-recently-played"] ul li,
+    body.dark-mode [data-widget="mcp-recently-played"] ul li * {
+        color: #e0e0e0 !important;
+    }
   </style>
 </head>
 
 <script type="text/javascript" language="javascript" src="https://carina.streamerr.co:2020/dist/widgets.js" defer></script>
 <body>
-  <div id="live-status" style="padding: 10px; font-weight: bold;">
-        <h3>Loading stream status...</h3>
+  <div id="live-status" style="display: flex; justify-content: space-between; align-items: center; background-color: #78a3b5; color: white; padding: 10px; border: 1px solid white; font-family: Arial, sans-serif;">
+    <select id="sleep-timer" style="font-size: 12px; padding: 3px; background: white; color: black; border-radius: 3px; border: 1px solid #ccc; cursor: pointer;">
+      <option value="0">Sleep: Off</option>
+      <option value="15">15m</option>
+      <option value="30">30m</option>
+      <option value="45">45m</option>
+      <option value="60">60m</option>
+    </select>
+    <span id="status-text" style="font-size: 16px; font-weight: bold; text-align: center;">Loading stream status...</span>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span id="timer-display" style="font-size: 13px; min-width: 45px; text-align: right;"></span>
+      <button id="dark-mode-toggle" style="background: none; border: none; font-size: 16px; cursor: pointer; padding: 2px;" title="Toggle Dark Mode">🌙</button>
+    </div>
   </div>
-  
+
   <div data-widget="mcp-now-playing-cover" data-name="miteradio" data-coverart="true" data-styled="true" data-cover="true" style="height: 330px"></div>
-  
+
   <div id="Website-player">
-    <audio id="native-audio" controls preload="auto" style="width: 100%;">
-      <source src="https://carina.streamerr.co/stream/miteradio?ua=Website-Player" type="audio/mpeg">
-      Your browser does not support the audio element.
+    <audio id="native-audio" controls preload="none" style="width: 100%;">
+    <source src="https://carina.streamerr.co/stream/miteradio?ua=PWA-Player" type="audio/mpeg">
+    Your browser does not support the audio element.
     </audio>
   </div>
   
@@ -89,7 +151,7 @@
 <iframe id="calendarWST" class="calendar" src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Australia%2FPerth&mode=AGENDA&src=a2F5QHN0YWlyd2F5cHJvamVjdC5vcmc&color=%234285F4" frameborder="0" scrolling="no"></iframe>
 <iframe id="calendarACST" class="calendar" src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Australia%2FAdelaide&mode=AGENDA&src=a2F5QHN0YWlyd2F5cHJvamVjdC5vcmc&color=%234285F4" frameborder="0" scrolling="no"></iframe>
 <iframe id="calendarAEST" class="calendar" src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Australia%2FSydney&mode=AGENDA&src=a2F5QHN0YWlyd2F5cHJvamVjdC5vcmc&color=%234285F4" frameborder="0" scrolling="no"></iframe>
- 
+  
   <script>
     let lastScrollPos = 0;
     function toggleCalendar(event, calendarId, headingId) {
@@ -117,8 +179,6 @@
     const nativeAudio = document.getElementById('native-audio');
 
     if ('mediaSession' in navigator && nativeAudio) {
-      
-      // Set metadata immediately so the OS knows what this player is
       navigator.mediaSession.metadata = new MediaMetadata({
         title: 'MITE Radio Live Stream',
         artist: 'MITE Radio',
@@ -133,7 +193,6 @@
         navigator.mediaSession.playbackState = 'paused';
       });
 
-      // Action handlers for lock screen controls
       navigator.mediaSession.setActionHandler('play', async () => {
         try {
           await nativeAudio.play();
@@ -149,41 +208,31 @@
       });
     }
   </script>
-  
+
   <script>
-        function checkLiveStatus() {
-            fetch('https://carina.streamerr.co:2020/json/stream/miteradio')
-                .then(response => response.json())
-                .then(data => {
-                    const statusElement = document.getElementById('live-status');
-                    
-                    // Using startsWith is safer as we discussed
-                    if (data.nowplaying && data.nowplaying.startsWith("DJ ")) {
-                        statusElement.innerText = "LIVE: " + data.nowplaying;
-                        statusElement.style.backgroundColor = "darkred";
-                        statusElement.style.color = "white"
-                        statusElement.style.fontFamily = "Arial, sans-serif";
-                        statusElement.style.fontSize = "16px";
-                    } else {
-                        statusElement.innerText = "Now Playing"// + data.nowplaying;
-                        statusElement.style.backgroundColor = "#78a3b5";
-                        statusElement.style.color = "white";
-                        statusElement.style.fontFamily = "Arial, sans-serif";
-                        statusElement.style.fontSize = "16px";
-                        statusElement.style.textAlign = "center";
-                    }
-                })
-                .catch(err => {
-                    console.error("Could not fetch status:", err);
-                    document.getElementById('live-status').innerText = "Stream status unavailable";
-                });
-        }
+    function checkLiveStatus() {
+        fetch('https://carina.streamerr.co:2020/json/stream/miteradio')
+            .then(response => response.json())
+            .then(data => {
+                const banner = document.getElementById('live-status');
+                const statusText = document.getElementById('status-text');
+                
+                if (data.nowplaying && data.nowplaying.startsWith("DJ ")) {
+                    statusText.innerText = "LIVE: " + data.nowplaying;
+                    banner.style.backgroundColor = document.body.classList.contains('dark-mode') ? "#5a1212" : "darkred";
+                } else {
+                    statusText.innerText = "Now Playing";
+                    banner.style.backgroundColor = document.body.classList.contains('dark-mode') ? "#2c4a56" : "#78a3b5";
+                }
+            })
+            .catch(err => {
+                console.error("Could not fetch status:", err);
+                document.getElementById('status-text').innerText = "Stream status unavailable";
+            });
+    }
 
-        // Run once immediately when the page loads
-        checkLiveStatus();
-
-        // Check again every 30 seconds (30000 milliseconds)
-        setInterval(checkLiveStatus, 30000);
+    checkLiveStatus();
+    setInterval(checkLiveStatus, 30000);
   </script>
 
   <script>
@@ -194,8 +243,97 @@
     }
   </script>
   
+  <script>
+    let sleepTimerId = null;
+    let countdownInterval = null;
+    const audioPlayer = document.getElementById('native-audio');
+    const timerSelect = document.getElementById('sleep-timer');
+    const timerDisplay = document.getElementById('timer-display');
+
+    timerSelect.addEventListener('change', async (e) => {
+      const minutes = parseInt(e.target.value, 10);
+
+      clearTimeout(sleepTimerId);
+      clearInterval(countdownInterval);
+      timerDisplay.innerText = "";
+
+      if (minutes === 0) {
+        console.log("Sleep timer disabled.");
+        return;
+      }
+
+      // Automatically start playing if the stream is paused when a sleep time is selected
+      if (audioPlayer && audioPlayer.paused) {
+        try {
+          await audioPlayer.play();
+          if ('mediaSession' in navigator) {
+            navigator.mediaSession.playbackState = 'playing';
+          }
+        } catch (err) {
+          console.error("Auto-play failed upon setting sleep timer:", err);
+        }
+      }
+
+      let timeLeft = minutes * 60;
+      console.log(`Sleep timer set for ${minutes} minutes.`);
+
+      countdownInterval = setInterval(() => {
+        if (timeLeft <= 0) {
+          clearInterval(countdownInterval);
+          return;
+        }
+        timeLeft--;
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        timerDisplay.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+      }, 1000);
+
+      sleepTimerId = setTimeout(() => {
+        if (audioPlayer && !audioPlayer.paused) {
+          audioPlayer.pause();
+          if ('mediaSession' in navigator) {
+            navigator.mediaSession.playbackState = 'paused';
+          }
+        }
+        timerSelect.value = "0";
+        timerDisplay.innerText = "";
+        clearInterval(countdownInterval);
+      }, minutes * 60 * 1000);
+    });
+  </script>
+
+  <script>
+    // Dark Mode Toggle Logic
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const userPrefersDark = localStorage.getItem('darkMode') === 'true';
+
+    function updateLiveBannerTheme() {
+      const banner = document.getElementById('live-status');
+      const isDark = document.body.classList.contains('dark-mode');
+      if (banner.style.backgroundColor === "darkred" || banner.style.backgroundColor === "rgb(139, 0, 0)" || banner.style.backgroundColor === "#5a1212") {
+        banner.style.backgroundColor = isDark ? "#5a1212" : "darkred";
+      } else {
+        banner.style.backgroundColor = isDark ? "#2c4a56" : "#78a3b5";
+      }
+    }
+
+    if (userPrefersDark) {
+      document.body.classList.add('dark-mode');
+      darkModeToggle.innerText = '☀️';
+      updateLiveBannerTheme();
+    }
+
+    darkModeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      const isDark = document.body.classList.contains('dark-mode');
+      localStorage.setItem('darkMode', isDark);
+      darkModeToggle.innerText = isDark ? '☀️' : '🌙';
+      updateLiveBannerTheme();
+    });
+  </script>
+
   <div class="footer">
-    v1.02 Usage terms and conditions on the MITE Radio website
+    v1.03 Usage terms and conditions on the MITE Radio website
   </div>
 
 </body>

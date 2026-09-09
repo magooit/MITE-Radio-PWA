@@ -217,20 +217,13 @@
                 const banner = document.getElementById('live-status');
                 const statusText = document.getElementById('status-text');
                 
-                if (data.nowplaying) {
-                    const txt = document.createElement("textarea");
-                    txt.innerHTML = data.nowplaying;
-                    const nowPlaying = decodeURIComponent(txt.value).trim();
-                    
-                    if (nowPlaying.startsWith("DJ ")) {
-                        statusText.innerText = "LIVE: " + nowPlaying;
-                        banner.style.backgroundColor = document.body.classList.contains('dark-mode') ? "#5a1212" : "darkred";
-                        return;
-                    }
+                if (data.nowplaying && data.nowplaying.startsWith("DJ ")) {
+                    statusText.innerText = "LIVE: " + data.nowplaying;
+                    banner.style.backgroundColor = document.body.classList.contains('dark-mode') ? "#5a1212" : "darkred";
+                } else {
+                    statusText.innerText = "Now Playing";
+                    banner.style.backgroundColor = document.body.classList.contains('dark-mode') ? "#2c4a56" : "#78a3b5";
                 }
-                
-                statusText.innerText = "Now Playing";
-                banner.style.backgroundColor = document.body.classList.contains('dark-mode') ? "#2c4a56" : "#78a3b5";
             })
             .catch(err => {
                 console.error("Could not fetch status:", err);

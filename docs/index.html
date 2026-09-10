@@ -69,6 +69,17 @@
         background-color: #ffffff !important;
     }
 
+    @keyframes subtleTextFlash {
+      0% { opacity: 1; }
+      50% { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+
+    .live-flash {
+      animation: subtleTextFlash 2s infinite ease-in-out;
+      color: #ffcccc;
+    }
+
     /* Dark Mode Styles */
     body.dark-mode {
       background-color: #121212;
@@ -112,7 +123,7 @@
 
 <script type="text/javascript" language="javascript" src="https://carina.streamerr.co:2020/dist/widgets.js" defer></script>
 <body>
-  <div id="live-status" style="display: flex; justify-content: space-between; align-items: center; background-color: #78a3b5; color: white; padding: 10px; border: 1px solid white; font-family: Arial, sans-serif;">
+  <div id="live-status" data-is-live="false" style="display: flex; justify-content: space-between; align-items: center; background-color: #78a3b5; color: white; padding: 10px; border: 1px solid white; font-family: Arial, sans-serif;">
     <select id="sleep-timer" style="font-size: 12px; padding: 3px; background: white; color: black; border-radius: 3px; border: 1px solid #ccc; cursor: pointer;">
       <option value="0">Sleep: Off</option>
       <option value="15">15m</option>
@@ -210,6 +221,18 @@
   </script>
 
   <script>
+    function updateLiveBannerTheme() {
+      const banner = document.getElementById('live-status');
+      const isDark = document.body.classList.contains('dark-mode');
+      const isLive = banner.getAttribute('data-is-live') === 'true';
+
+      if (isLive) {
+        banner.style.backgroundColor = isDark ? "#5a1212" : "darkred";
+      } else {
+        banner.style.backgroundColor = isDark ? "#2c4a56" : "#78a3b5";
+      }
+    }
+
     function checkLiveStatus() {
         fetch('https://carina.streamerr.co:2020/json/stream/miteradio')
             .then(response => response.json())
@@ -217,13 +240,23 @@
                 const banner = document.getElementById('live-status');
                 const statusText = document.getElementById('status-text');
                 
-                if (data.nowplaying && data.nowplaying.startsWith("DJ ")) {
-                    statusText.innerText = "LIVE: " + data.nowplaying;
-                    banner.style.backgroundColor = document.body.classList.contains('dark-mode') ? "#5a1212" : "darkred";
-                } else {
-                    statusText.innerText = "Now Playing";
-                    banner.style.backgroundColor = document.body.classList.contains('dark-mode') ? "#2c4a56" : "#78a3b5";
+                if (data && data.nowplaying) {
+                    const txt = document.createElement("textarea");
+                    txt.innerHTML = data.nowplaying;
+                    const nowPlaying = decodeURIComponent(txt.value).trim();
+                    
+                    // Checks if it starts with DJ and contains a pipe character
+                    if (nowPlaying.toUpperCase().startsWith("DJ") && nowPlaying.includes("|")) {
+                        statusText.innerHTML = '<span class="live-flash">LIVE</span>: ' + nowPlaying;
+                        banner.setAttribute('data-is-live', 'true');
+                        updateLiveBannerTheme();
+                        return;
+                    }
                 }
+                
+                statusText.innerText = "Now Playing";
+                banner.setAttribute('data-is-live', 'false');
+                updateLiveBannerTheme();
             })
             .catch(err => {
                 console.error("Could not fetch status:", err);
@@ -262,7 +295,6 @@
         return;
       }
 
-      // Automatically start playing if the stream is paused when a sleep time is selected
       if (audioPlayer && audioPlayer.paused) {
         try {
           await audioPlayer.play();
@@ -307,16 +339,6 @@
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     const userPrefersDark = localStorage.getItem('darkMode') === 'true';
 
-    function updateLiveBannerTheme() {
-      const banner = document.getElementById('live-status');
-      const isDark = document.body.classList.contains('dark-mode');
-      if (banner.style.backgroundColor === "darkred" || banner.style.backgroundColor === "rgb(139, 0, 0)" || banner.style.backgroundColor === "#5a1212") {
-        banner.style.backgroundColor = isDark ? "#5a1212" : "darkred";
-      } else {
-        banner.style.backgroundColor = isDark ? "#2c4a56" : "#78a3b5";
-      }
-    }
-
     if (userPrefersDark) {
       document.body.classList.add('dark-mode');
       darkModeToggle.innerText = '☀️';
@@ -333,7 +355,7 @@
   </script>
 
   <div class="footer">
-    v1.03 Usage terms and conditions on the MITE Radio website
+    v1.02 Usage terms and conditions on the MITE Radio website
   </div>
 
 </body>
